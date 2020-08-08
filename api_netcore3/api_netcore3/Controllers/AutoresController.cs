@@ -34,9 +34,11 @@ namespace api_netcore3.Controllers
         //[HttpGet("{id}/{param2?}")]
         //Por defecto param2=Gonzalez
         [HttpGet("{id}/{param2=Gonzalez}")]
-        public ActionResult<Autor> Get(int id,string param2)
+
+        // ActionResult Es recomendable
+        public async Task<ActionResult<Autor>> Get(int id,string param2)
         {
-            var autor = context.Autores.Include(x => x.Libros).FirstOrDefault(x => x.Id == id);
+            var autor = await context.Autores.Include(x => x.Libros).FirstOrDefaultAsync(x => x.Id == id);
 
             if (autor == null)
             {
