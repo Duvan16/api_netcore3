@@ -1,6 +1,7 @@
 ﻿using api_netcore3.Contexts;
 using api_netcore3.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
@@ -36,7 +37,7 @@ namespace api_netcore3.Controllers
         [HttpGet("{id}/{param2=Gonzalez}")]
 
         // ActionResult Es recomendable
-        public async Task<ActionResult<Autor>> Get(int id,string param2)
+        public async Task<ActionResult<Autor>> Get(int id, [BindRequired] string param2)
         {
             var autor = await context.Autores.Include(x => x.Libros).FirstOrDefaultAsync(x => x.Id == id);
 
