@@ -21,14 +21,20 @@ namespace api_netcore3.Controllers
             this.context = context;
         }
 
-        [HttpGet]
+        [HttpGet("/listado")]
+        [HttpGet("listado")]
         public ActionResult<IEnumerable<Autor>> Get()
         {
             return context.Autores.Include(x => x.Libros).ToList();
         }
 
-        [HttpGet("{id}", Name = "ObtenerAutor")]
-        public ActionResult<Autor> Get(int id)
+        //[HttpGet("{id}", Name = "ObtenerAutor")]
+
+        // opcional param2
+        //[HttpGet("{id}/{param2?}")]
+        //Por defecto param2=Gonzalez
+        [HttpGet("{id}/{param2=Gonzalez}")]
+        public ActionResult<Autor> Get(int id,string param2)
         {
             var autor = context.Autores.Include(x => x.Libros).FirstOrDefault(x => x.Id == id);
 
