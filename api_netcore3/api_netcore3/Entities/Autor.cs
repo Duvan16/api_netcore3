@@ -25,6 +25,8 @@ namespace api_netcore3.Entities
         //[Url]
         //public string Url { get; set; }
 
+        public DateTime FechaNacimiento { get; set; }
+
         public List<Libro> Libros { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

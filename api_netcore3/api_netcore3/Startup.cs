@@ -36,6 +36,7 @@ namespace api_netcore3
             {
                 configuration.CreateMap<Autor, AutorDTO>();
                 configuration.CreateMap<Libro, LibroDTO>();
+                configuration.CreateMap<AutorCreacionDTO, Autor>().ReverseMap();
             }, typeof(Startup));
 
             services.AddResponseCaching();

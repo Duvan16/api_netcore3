@@ -4,6 +4,7 @@ using api_netcore3.Helpers;
 using api_netcore3.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,7 @@ namespace api_netcore3.Controllers
         private readonly ILogger<AutoresController> logger;
         private readonly IMapper mapper;
 
-        public AutoresController(ApplicationDbContext context,ILogger<AutoresController> logger,IMapper mapper)
+        public AutoresController(ApplicationDbContext context, ILogger<AutoresController> logger, IMapper mapper)
         {
             this.context = context;
             this.logger = logger;
@@ -38,13 +39,13 @@ namespace api_netcore3.Controllers
         //[ServiceFilter(typeof(MiFiltroDeAccion))]
         public ActionResult<IEnumerable<Autor>> Get()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
             logger.LogInformation("Obteniendo los autores");
             return context.Autores.Include(x => x.Libros).ToList();
         }
 
         [HttpGet("PruebaCache")]
-        [ResponseCache(Duration =15)]
+        [ResponseCache(Duration = 15)]
         //[Authorize]
         public ActionResult<string> GetPruebaCache()
         {
@@ -56,7 +57,7 @@ namespace api_netcore3.Controllers
         // opcional param2
         //[HttpGet("{id}/{param2?}")]
         //Por defecto param2=Gonzalez
-        [HttpGet("{id}/{param2=Gonzalez}")]
+        [HttpGet("{id}/{param2=Gonzalez}", Name = "ObtenerAutor")]
 
         // ActionResult Es recomendable
         public async Task<ActionResult<AutorDTO>> Get(int id, [BindRequired] string param2)
@@ -81,21 +82,22 @@ namespace api_netcore3.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] Autor autor)
+        public async Task<ActionResult> Post([FromBody] AutorCreacionDTO autorCreacion)
         {
             //Esto no es necesario en asp.net core 2.1 en adelante
             //if (!ModelState.IsValid)
             //{
             //    return BadRequest(ModelState);
             //}
-
+            var autor = mapper.Map<Autor>(autorCreacion);
             context.Autores.Add(autor);
-            context.SaveChanges();
-            return new CreatedAtRouteResult("ObtenerAutor", new { id = autor.Id }, autor);
+            await context.SaveChangesAsync();
+            var autorDTO = mapper.Map<AutorDTO>(autor);
+            return new CreatedAtRouteResult("ObtenerAutor", new { id = autor.Id }, autorDTO);
         }
 
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] Autor value)
+        public async Task<ActionResult> Put(int id, [FromBody] AutorCreacionDTO autorActualizacion)
         {
             //Esto no es necesario en asp.net core 2.1 en adelante
             //if (!ModelState.IsValid)
@@ -103,29 +105,62 @@ namespace api_netcore3.Controllers
             //    return BadRequest(ModelState);
             //}
 
-            if (id != value.Id)
+            //if (id != autor.Id)
+            //{
+            //    return BadRequest();
+            //}
+            var autor = mapper.Map<Autor>(autorActualizacion);
+            autor.Id = id;
+            context.Entry(autor).State = EntityState.Modified;
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<ActionResult> Patch(int id, [FromBody] JsonPatchDocument<AutorCreacionDTO> patchDocument)
+        {
+            if (patchDocument == null)
             {
                 return BadRequest();
             }
 
-            context.Entry(value).State = EntityState.Modified;
-            context.SaveChanges();
-            return Ok();
-        }
+            var autorDeLaDB = await context.Autores.FirstOrDefaultAsync(x => x.Id == id);
 
-        [HttpDelete("{id}")]
-        public ActionResult<Autor> Delete(int id)
-        {
-            var autor = context.Autores.FirstOrDefault(x => x.Id == id);
-
-            if (autor == null)
+            if (autorDeLaDB == null)
             {
                 return NotFound();
             }
 
-            context.Autores.Remove(autor);
-            context.SaveChanges();
-            return autor;
+            var autorDTO = mapper.Map<AutorCreacionDTO>(autorDeLaDB);
+
+            patchDocument.ApplyTo(autorDTO, ModelState);
+
+            mapper.Map(autorDTO, autorDeLaDB);
+
+            var isValid = TryValidateModel(autorDeLaDB);
+
+            if (!isValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Autor>> Delete(int id)
+        {
+            var autorId = await context.Autores.Select(x => x.Id).FirstOrDefaultAsync(x => x == id);
+
+            if (autorId == default(int))
+            {
+                return NotFound();
+            }
+
+            context.Remove(new Autor { Id = autorId});
+            await context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }
