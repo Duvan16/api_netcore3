@@ -1,5 +1,6 @@
 ﻿using api_netcore3.Contexts;
 using api_netcore3.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ namespace api_netcore3.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AutoresController : ControllerBase
     {
         private readonly ApplicationDbContext context;
@@ -31,6 +33,14 @@ namespace api_netcore3.Controllers
         {
             logger.LogInformation("Obteniendo los autores");
             return context.Autores.Include(x => x.Libros).ToList();
+        }
+
+        [HttpGet("PruebaCache")]
+        [ResponseCache(Duration =15)]
+        //[Authorize]
+        public ActionResult<string> GetPruebaCache()
+        {
+            return DateTime.Now.Second.ToString();
         }
 
         //[HttpGet("{id}", Name = "ObtenerAutor")]
