@@ -3,6 +3,7 @@ using api_netcore3.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -16,16 +17,19 @@ namespace api_netcore3.Controllers
     public class AutoresController : ControllerBase
     {
         private readonly ApplicationDbContext context;
+        private readonly ILogger<AutoresController> logger;
 
-        public AutoresController(ApplicationDbContext context)
+        public AutoresController(ApplicationDbContext context,ILogger<AutoresController> logger)
         {
             this.context = context;
+            this.logger = logger;
         }
 
         [HttpGet("/listado")]
         [HttpGet("listado")]
         public ActionResult<IEnumerable<Autor>> Get()
         {
+            logger.LogInformation("Obteniendo los autores");
             return context.Autores.Include(x => x.Libros).ToList();
         }
 
@@ -43,6 +47,7 @@ namespace api_netcore3.Controllers
 
             if (autor == null)
             {
+                logger.LogWarning($"El autor de Id {id} no ha sido encontrado");
                 return NotFound();
             }
             return autor;

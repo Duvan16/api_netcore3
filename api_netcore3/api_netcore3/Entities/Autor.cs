@@ -16,14 +16,14 @@ namespace api_netcore3.Entities
         [StringLength(10,ErrorMessage ="El campo Nombre debe tener {1} caracteres o menos")]
         public string Nombre { get; set; }
 
-        [Range(18, 20)]
-        public int Edad { get; set; }
+        //[Range(18, 20)]
+        //public int Edad { get; set; }
 
-        [CreditCard]
-        public string CreditCard { get; set; }
+        //[CreditCard]
+        //public string CreditCard { get; set; }
 
-        [Url]
-        public string Url { get; set; }
+        //[Url]
+        //public string Url { get; set; }
 
         public List<Libro> Libros { get; set; }
 
