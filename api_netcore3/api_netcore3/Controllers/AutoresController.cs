@@ -1,5 +1,6 @@
 ﻿using api_netcore3.Contexts;
 using api_netcore3.Entities;
+using api_netcore3.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -15,7 +16,7 @@ namespace api_netcore3.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class AutoresController : ControllerBase
     {
         private readonly ApplicationDbContext context;
@@ -29,8 +30,11 @@ namespace api_netcore3.Controllers
 
         [HttpGet("/listado")]
         [HttpGet("listado")]
+        //[HttpGet]
+        //[ServiceFilter(typeof(MiFiltroDeAccion))]
         public ActionResult<IEnumerable<Autor>> Get()
         {
+            throw new NotImplementedException();
             logger.LogInformation("Obteniendo los autores");
             return context.Autores.Include(x => x.Libros).ToList();
         }
