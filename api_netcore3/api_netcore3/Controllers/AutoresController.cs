@@ -1,6 +1,8 @@
 ﻿using api_netcore3.Contexts;
 using api_netcore3.Entities;
 using api_netcore3.Helpers;
+using api_netcore3.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -21,11 +23,13 @@ namespace api_netcore3.Controllers
     {
         private readonly ApplicationDbContext context;
         private readonly ILogger<AutoresController> logger;
+        private readonly IMapper mapper;
 
-        public AutoresController(ApplicationDbContext context,ILogger<AutoresController> logger)
+        public AutoresController(ApplicationDbContext context,ILogger<AutoresController> logger,IMapper mapper)
         {
             this.context = context;
             this.logger = logger;
+            this.mapper = mapper;
         }
 
         [HttpGet("/listado")]
@@ -55,7 +59,7 @@ namespace api_netcore3.Controllers
         [HttpGet("{id}/{param2=Gonzalez}")]
 
         // ActionResult Es recomendable
-        public async Task<ActionResult<Autor>> Get(int id, [BindRequired] string param2)
+        public async Task<ActionResult<AutorDTO>> Get(int id, [BindRequired] string param2)
         {
             var autor = await context.Autores.Include(x => x.Libros).FirstOrDefaultAsync(x => x.Id == id);
 
@@ -64,7 +68,16 @@ namespace api_netcore3.Controllers
                 logger.LogWarning($"El autor de Id {id} no ha sido encontrado");
                 return NotFound();
             }
-            return autor;
+            //return autor;
+            //return new AutorDTO()
+            //{
+            //    Id = autor.Id,
+            //    Nombre = autor.Nombre
+            //};
+
+            var autorDTO = mapper.Map<AutorDTO>(autor);
+
+            return autorDTO;
         }
 
         [HttpPost]

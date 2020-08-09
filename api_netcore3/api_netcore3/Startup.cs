@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api_netcore3.Contexts;
+using api_netcore3.Entities;
 using api_netcore3.Helpers;
+using api_netcore3.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,6 +32,12 @@ namespace api_netcore3
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAutoMapper(configuration =>
+            {
+                configuration.CreateMap<Autor, AutorDTO>();
+                configuration.CreateMap<Libro, LibroDTO>();
+            }, typeof(Startup));
+
             services.AddResponseCaching();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer();
