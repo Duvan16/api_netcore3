@@ -3,6 +3,7 @@ using api_netcore3.Entities;
 using api_netcore3.Helpers;
 using api_netcore3.Models;
 using AutoMapper;
+using AutoMapper.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,7 @@ namespace api_netcore3.Controllers
         private readonly ILogger<AutoresController> logger;
         private readonly IMapper mapper;
 
-        public AutoresController(ApplicationDbContext context, ILogger<AutoresController> logger, IMapper mapper)
+        public AutoresController(ApplicationDbContext context, ILogger<AutoresController> logger, IMapper mapper, IConfiguration configuration)
         {
             this.context = context;
             this.logger = logger;
@@ -43,6 +44,8 @@ namespace api_netcore3.Controllers
             logger.LogInformation("Obteniendo los autores");
             return context.Autores.Include(x => x.Libros).ToList();
         }
+
+
 
         [HttpGet("PruebaCache")]
         [ResponseCache(Duration = 15)]
