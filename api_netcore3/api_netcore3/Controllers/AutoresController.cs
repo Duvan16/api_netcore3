@@ -26,16 +26,20 @@ namespace api_netcore3.Controllers
         private readonly ApplicationDbContext context;
         private readonly ILogger<AutoresController> logger;
         private readonly IMapper mapper;
+        private readonly IUrlHelper urlHelper;
 
-        public AutoresController(ApplicationDbContext context, ILogger<AutoresController> logger, IMapper mapper, IConfiguration configuration)
+        public AutoresController(ApplicationDbContext context, ILogger<AutoresController> logger, IMapper mapper, IConfiguration configuration
+            , IUrlHelper urlHelper)
         {
             this.context = context;
             this.logger = logger;
             this.mapper = mapper;
+            this.urlHelper = urlHelper;
         }
 
-        [HttpGet("/listado")]
-        [HttpGet("listado")]
+        [HttpGet(Name = "ObtenerAutores")]
+        //[HttpGet("/listado")]
+        //[HttpGet("listado")]
         //[HttpGet]
         //[ServiceFilter(typeof(MiFiltroDeAccion))]
         public ActionResult<IEnumerable<Autor>> Get()
@@ -81,10 +85,19 @@ namespace api_netcore3.Controllers
 
             var autorDTO = mapper.Map<AutorDTO>(autor);
 
+            GenerarEnlaces(autorDTO);
+
             return autorDTO;
         }
 
-        [HttpPost]
+        private void GenerarEnlaces(AutorDTO autor)
+        {
+            autor.Enlaces.Add(new Enlace(urlHelper.Link("ObtenerAutor", new { id = autor.Id }), rel: "self", metodo: "GET"));
+            autor.Enlaces.Add(new Enlace(urlHelper.Link("ActualizarAutor", new { id = autor.Id }), rel: "update-author", metodo: "PUT"));
+            autor.Enlaces.Add(new Enlace(urlHelper.Link("BorrarAutor", new { id = autor.Id }), rel: "delete-author", metodo: "DELETE"));
+        }
+
+        [HttpPost(Name = "CrearAutor")]
         public async Task<ActionResult> Post([FromBody] AutorCreacionDTO autorCreacion)
         {
             //Esto no es necesario en asp.net core 2.1 en adelante
@@ -99,7 +112,7 @@ namespace api_netcore3.Controllers
             return new CreatedAtRouteResult("ObtenerAutor", new { id = autor.Id }, autorDTO);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}", Name = "ActualizarAutor")]
         public async Task<ActionResult> Put(int id, [FromBody] AutorCreacionDTO autorActualizacion)
         {
             //Esto no es necesario en asp.net core 2.1 en adelante
@@ -151,7 +164,7 @@ namespace api_netcore3.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}", Name = "BorrarAutor")]
         public async Task<ActionResult<Autor>> Delete(int id)
         {
             var autorId = await context.Autores.Select(x => x.Id).FirstOrDefaultAsync(x => x == id);
@@ -161,7 +174,7 @@ namespace api_netcore3.Controllers
                 return NotFound();
             }
 
-            context.Remove(new Autor { Id = autorId});
+            context.Remove(new Autor { Id = autorId });
             await context.SaveChangesAsync();
             return NoContent();
         }

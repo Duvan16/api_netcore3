@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +34,7 @@ namespace api_netcore3
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddAutoMapper(configuration =>
             {
                 configuration.CreateMap<Autor, AutorDTO>();
@@ -52,7 +55,12 @@ namespace api_netcore3
                 options.Filters.Add(new MiFiltroDeExcepcion());
 
             });
-                
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>()
+            .AddScoped<IUrlHelper>(x => x
+            .GetRequiredService<IUrlHelperFactory>()
+            .GetUrlHelper(x.GetRequiredService<IActionContextAccessor>().ActionContext));
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
