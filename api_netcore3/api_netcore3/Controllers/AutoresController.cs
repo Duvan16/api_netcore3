@@ -164,6 +164,10 @@ namespace api_netcore3.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Borra un elemento específico
+        /// </summary>
+        /// <param name="id">Id del elemento a borrar</param>
         [HttpDelete("{id}", Name = "BorrarAutor")]
         public async Task<ActionResult<Autor>> Delete(int id)
         {
