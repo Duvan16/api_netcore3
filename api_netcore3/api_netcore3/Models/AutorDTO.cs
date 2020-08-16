@@ -25,5 +25,17 @@ namespace api_netcore3.Models
         //public string Url { get; set; }
 
         public List<LibroDTO> Libros { get; set; }
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (!string.IsNullOrEmpty(Nombre))
+            {
+                var firstLetter = Nombre[0].ToString();
+
+                if (firstLetter != firstLetter.ToUpper())
+                {
+                    yield return new ValidationResult("La primera letra debe ser mayúscula", new string[] { nameof(Nombre) });
+                }
+            }
+        }
     }
 }

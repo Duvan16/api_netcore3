@@ -28,7 +28,9 @@ namespace api_netcore3.Controllers
         private readonly IMapper mapper;
         private readonly IUrlHelper urlHelper;
 
-        public AutoresController(ApplicationDbContext context, ILogger<AutoresController> logger, IMapper mapper, IConfiguration configuration
+        //public AutoresController(ApplicationDbContext context, ILogger<AutoresController> logger, IMapper mapper, IConfiguration configuration
+        //    , IUrlHelper urlHelper)
+        public AutoresController(ApplicationDbContext context, ILogger<AutoresController> logger, IMapper mapper
             , IUrlHelper urlHelper)
         {
             this.context = context;
@@ -42,14 +44,26 @@ namespace api_netcore3.Controllers
         //[HttpGet("listado")]
         //[HttpGet]
         //[ServiceFilter(typeof(MiFiltroDeAccion))]
-        public ActionResult<IEnumerable<Autor>> Get()
+        public async Task<ActionResult<IEnumerable<AutorDTO>>> Get(int numeroDePagina = 1, int cantidadRegistros = 10)
         {
+            var query = context.Autores.AsQueryable();
+            var totalDeRegistros = query.Count();
+
             //throw new NotImplementedException();
             logger.LogInformation("Obteniendo los autores");
-            return context.Autores.Include(x => x.Libros).ToList();
+            var autores = await context.Autores
+                .Skip(cantidadRegistros * (numeroDePagina - 1))
+                .Take(cantidadRegistros)
+                .ToListAsync();
+            //return context.Autores.Include(x => x.Libros).ToList();
+
+            Response.Headers["X-Total-Registros"] = totalDeRegistros.ToString();
+            Response.Headers["X-Cantidad-Paginas"]=
+                ((int)Math.Ceiling((double) totalDeRegistros / cantidadRegistros)).ToString();
+
+            var autoresDTO = mapper.Map<List<AutorDTO>>(autores);
+            return autoresDTO;
         }
-
-
 
         [HttpGet("PruebaCache")]
         [ResponseCache(Duration = 15)]
