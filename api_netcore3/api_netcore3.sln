@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "api_netcore3", "api_netcore
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiPruebasUnitarias", "WebApiPruebasUnitarias\WebApiPruebasUnitarias.csproj", "{9F5DF237-CCF9-4437-AA11-169BE269BEB6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiPruebasDeIntegracion", "WebApiPruebasDeIntegracion\WebApiPruebasDeIntegracion.csproj", "{EAC8F1C6-F81C-4A19-B30E-90788844E76E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{9F5DF237-CCF9-4437-AA11-169BE269BEB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F5DF237-CCF9-4437-AA11-169BE269BEB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F5DF237-CCF9-4437-AA11-169BE269BEB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAC8F1C6-F81C-4A19-B30E-90788844E76E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAC8F1C6-F81C-4A19-B30E-90788844E76E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAC8F1C6-F81C-4A19-B30E-90788844E76E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAC8F1C6-F81C-4A19-B30E-90788844E76E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

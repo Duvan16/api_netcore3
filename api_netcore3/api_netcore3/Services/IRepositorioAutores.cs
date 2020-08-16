@@ -7,6 +7,6 @@ namespace api_netcore3.Services
 {
     public interface IRepositorioAutores
     {
-        Autor ObtenerPorId(int id);
+        //Autor ObtenerPorId(int id);
     }
 }
